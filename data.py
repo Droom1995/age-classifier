@@ -49,8 +49,6 @@ _f.sort(key = lambda x: x[1], reverse=True)
 import openpyxl
 wb = openpyxl.load_workbook('Data/columns_description.xls')
 w = wb.active
-for x in range():
-
 
 feature = [x[1] for x in _f[:15]]
 use_field = [x[0] for x in _f[:15]]

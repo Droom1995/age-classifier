@@ -5,7 +5,7 @@ from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn import metrics
 from matplotlib import pyplot as plt
 import numpy as np
-from data import X_t, target, target_test, X \
+from .data import X_t, target, target_test, X \
     ,X_full, dataset, X_f_t
 
 

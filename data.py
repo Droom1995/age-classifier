@@ -10,8 +10,8 @@ print(dataset2)
 
 # merge = dataset2.join(dataset1, on='SUBS_ID')
 
-print(pd.merge(dataset1, dataset2, on='SUBS_ID', how='left'))
-
+m = pd.merge(dataset1, dataset2, on='SUBS_ID', how='left')
+m.to_csv(open('Data/X.csv', 'w'))
 # dataset = dataset1
 
 

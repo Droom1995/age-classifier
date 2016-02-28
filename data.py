@@ -37,8 +37,8 @@ imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
 imp.fit(dataset1)
 dataset1 = imp.transform(dataset1)
 dataset1 = DataFrame(dataset1, columns=use_field)
-dataset1 = throw_outliers(dataset1)
 dataset1 = concat_free_money(dataset1)
+dataset1 = throw_outliers(dataset1)
 dataset1 = dataset1.assign(SUBS_ID=dataset.SUBS_ID)
 dataset1 = pd.merge(dataset1, dataset2, on='SUBS_ID', how='left')
 dataset1 = pd.merge(dataset1, read_csv('Data/X2.csv'), on='SUBS_ID', how='left')
@@ -46,6 +46,7 @@ dataset1 = pd.merge(dataset1, read_csv('Data/X2.csv'), on='SUBS_ID', how='left')
 gr = dataset1.groupby('SUBS_ID')
 dataset = gr.mean()
 dataset1 = dataset.copy()
+
 dataset1 = dataset1.drop(['AGE_GROUP1', 'AGE_GROUP2'], axis=1)
 print(len(dataset1.columns.values))
 # dataset1 = dataset1['SUBS_ID']
@@ -57,8 +58,13 @@ train = dataset1[:int(len(dataset1)/TRAIN_PART)]
 test = dataset1[int(len(dataset1)/TRAIN_PART):]
 target_1 = dataset.AGE_GROUP1[:int(len(dataset2)/TRAIN_PART)]
 target_test_1 = dataset.AGE_GROUP1[int(len(dataset2)/TRAIN_PART):]
+from sklearn.linear_model import SGDRegressor
+sgd = SGDRegressor(loss='huber', n_iter=100)
+sgd.fit(train, target_1)
+test = np.hstack((test, sgd.predict(test)[None].T))
+train = np.hstack((train, sgd.predict(train)[None].T))
 
-model = GradientBoostingClassifier(n_estimators=300)
+model = RandomForestClassifier(n_estimators=300, n_jobs=5)
 model.fit(train, target_1)
 print(metrics.classification_report(target_test_1, model.predict(test)))
 # display the relative importance of each attribute
@@ -66,14 +72,14 @@ print(metrics.classification_report(target_test_1, model.predict(test)))
 feature = model.feature_importances_
 #
 # # _f = [[x, y] for x, y in zip(use_field, feature)]
-_f = {x: y for x, y in zip(use_field, feature)}
-# # _f.sort(key = lambda x: x[1], reverse=True)
-import openpyxl
-wb = openpyxl.load_workbook('Data/columns_description.xlsx')
-w = wb.active
-for x in range(2, 178):
-    w['D%s' % (x + 2)] = _f.get(w['B%s' % (x + 2)].value, -1)*100
-wb.save('Data/columns_description.xlsx')
+# _f = {x: y for x, y in zip(use_field, feature)}
+# # # _f.sort(key = lambda x: x[1], reverse=True)
+# import openpyxl
+# wb = openpyxl.load_workbook('Data/columns_description.xlsx')
+# w = wb.active
+# for x in range(2, 178):
+#     w['D%s' % (x + 2)] = _f.get(w['B%s' % (x + 2)].value, -1)*100
+# wb.save('Data/columns_description.xlsx')
 # #
 # # feature = [x[1] for x in _f[:15]]
 # # use_field = [x[0] for x in _f[:15]]

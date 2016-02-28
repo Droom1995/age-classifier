@@ -50,13 +50,14 @@ print(len(dataset1.columns.values))
 # dataset1 = dataset1['SUBS_ID']
       # (dataset.columns.values[0]))
 # dataset1 = preprocessing.scale(dataset1)
-#
-train = dataset1[:int(len(dataset1)/3*2)]
-test = dataset1[int(len(dataset1)/3*2):]
-target_1 = dataset.AGE_GROUP2[:int(len(dataset2)/3*2)]
-target_test_1 = dataset.AGE_GROUP2[int(len(dataset2)/3*2):]
 
-model = RandomForestClassifier(n_estimators=300, n_jobs=5)
+TRAIN_PART = 5/4
+train = dataset1[:int(len(dataset1)/TRAIN_PART)]
+test = dataset1[int(len(dataset1)/TRAIN_PART):]
+target_1 = dataset.AGE_GROUP1[:int(len(dataset2)/TRAIN_PART)]
+target_test_1 = dataset.AGE_GROUP1[int(len(dataset2)/TRAIN_PART):]
+
+model = GradientBoostingClassifier(n_estimators=300)
 model.fit(train, target_1)
 print(metrics.classification_report(target_test_1, model.predict(test)))
 # display the relative importance of each attribute

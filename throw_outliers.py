@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import Imputer
 import matplotlib.pyplot as plt
+import re
 
 def throw_outliers(data, perc=75):
     """ create the training + test sets"""
@@ -36,6 +37,24 @@ def throw_outliers(data, perc=75):
     return data
 
 
+def concat_free_money(data):
+    # for col in data.columns:
+    #     print(col)
+    fm_col_tag = 'FREE_MONEY'
+        # print(value)
+    for col in data.columns:
+        if col.split('_')[-1].startswith('FM'):
+            if fm_col_tag in data:
+                data[fm_col_tag] = data[fm_col_tag] + data[col]
+                data = data.drop(col, 1)
+            else:
+                data[fm_col_tag] = data[col]
+                data = data.drop(col, 1)
+    # print('-------------------')
+    # for value in data['FREE_MONEY']:
+    #     print(value)
+    return data
+
 if __name__ == '__main__':
     import time
     from pandas import read_csv, DataFrame
@@ -48,5 +67,5 @@ if __name__ == '__main__':
     imp.fit(dataset1)
     dataset1 = imp.transform(dataset1)
     dataset1 = DataFrame(dataset1, columns=use_field)
-    throw_outliers(dataset1)
+    concat_free_money(dataset1)
     print(float(time.time() - t)*100/60)

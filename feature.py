@@ -18,10 +18,10 @@ dataset2 = read_csv('Data/y.csv')
 
 imp = Imputer(missing_values='NA', strategy='mean', axis=0)
 dataset1 = dataset1.select_dtypes(include=[object])
-
+dataset1.drop('ACTIVITY_SMS_DAYS_IND', axis=1)
 main_map = {}
 # print(len(dataset1))
-# dataset1 = dataset1.head(1000)
+# dataset1 = dataset1.head(5000)
 import time
 t =time.time()
 X = {}
@@ -45,24 +45,35 @@ for column in dataset1:
     main_map[column] = map
 
 classes = {k: {x: i for i, x in enumerate(v)} for k, v in main_map.items()}
-print(classes)
+main_map = {k: max(v, key=v.get) for k, v in main_map.items()}
 
-for id in set(dataset1['SUBS_ID']):
+# print(classes)
+# print('--------------')
+d_set = set(dataset1['SUBS_ID'])
+# count = len(ids)
+for j, id in enumerate(d_set):
+    print(j)
     rows = ids[id]
     X_t = {}
-    for column in rows:
-        map = dict(Counter(dataset1[column]))
-        if len(map.values()) == 0:
-            map[max({x: y for x, y in main_map.items() if str(x) != 'nan'}, key=main_map.get)] = max(main_map.values())
-        max_key = max({x: y for x, y in map.items() if str(x) != 'nan'}, key=map.get)
+
+    for i, column in enumerate(rows):
+        print(i)
+        map = dict(Counter(rows[column]))
+        t_d = {x: y for x, y in map.items() if str(x) != 'nan'}
+        if not t_d:
+            max_key = main_map[column]
+        else:
+            max_key = max(t_d, key=map.get)
         # print(max_key)
-        X_t.update({column: classes[column][max_key]})
+        X_t[column] = classes[column].get(max_key)
+    # print(temp)
         # print(map, max(map.values()))
 
         # classes = []
         # mean = sum(map.values())/len(map)
         # print(map, mean)
     X.update({id: X_t})
+
 
 import csv
 w = csv.DictWriter(open('Data/X2.csv', 'w'), fieldnames=dataset1.columns.values)

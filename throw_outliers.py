@@ -23,6 +23,9 @@ def throw_outliers(data, perc=75):
         quantity_cols_5percentiles[quan_col] = np.percentile(current_col, 100 - perc)
         quantity_cols_mean[quan_col] = current_col.mean()
         old_data[quan_col] = current_col #len(current_col[abs(current_col) > current_col.std()*3])
+        plt.hist(current_col)
+        plt.title(quan_col)
+        plt.show()
 
     for index, row in data.iterrows():
         for col in numerics_cols:
@@ -67,5 +70,6 @@ if __name__ == '__main__':
     imp.fit(dataset1)
     dataset1 = imp.transform(dataset1)
     dataset1 = DataFrame(dataset1, columns=use_field)
-    concat_free_money(dataset1)
+    dataset1 = concat_free_money(dataset1)
+    dataset1 = throw_outliers(dataset1)
     print(float(time.time() - t)*100/60)

@@ -6,16 +6,21 @@ import itertools as it
 from sklearn import metrics, preprocessing
 import seaborn
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, ExtraTreesClassifier
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, ExtraTreesClassifier, AdaBoostClassifier
 from sklearn import metrics
 from matplotlib import pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import Imputer
-from throw_outliers import throw_outliers
+from throw_outliers import concat_free_money
 dataset = read_csv('Data/BaseHackathon.csv')
 # dataset2 = read_csv('Data/y.csv')
 
 dataset2 = read_csv('Data/Target_AgeGroup.csv')
+for dset in dataset:
+        if '_FM' in dset:
+            del dataset[dset]
+del dataset['MonthAgo']
+# print(dataset.columns.values)
 
 # print(dataset2)
 
@@ -35,13 +40,16 @@ imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
 imp.fit(dataset1)
 dataset1 = imp.transform(dataset1)
 dataset1 = DataFrame(dataset1, columns=use_field)
-dataset1 = throw_outliers(dataset1)
+dataset1 = concat_free_money(dataset1)
 dataset1 = dataset1.assign(SUBS_ID=dataset.SUBS_ID)
 dataset1 = pd.merge(dataset1, dataset2, on='SUBS_ID', how='left')
+dataset1 = pd.merge(dataset1, read_csv('Data/X2.csv'), on='SUBS_ID', how='left')
 # print(use_field)
-dataset = dataset1.groupby('SUBS_ID').mean()
+gr = dataset1.groupby('SUBS_ID')
+dataset = gr.mean()
 dataset1 = dataset.copy()
 dataset1 = dataset1.drop(['AGE_GROUP1', 'AGE_GROUP2'], axis=1)
+print(len(dataset1.columns.values))
 # dataset1 = dataset1['SUBS_ID']
       # (dataset.columns.values[0]))
 # dataset1 = preprocessing.scale(dataset1)
@@ -56,17 +64,17 @@ model.fit(train, target_1)
 print(metrics.classification_report(target_test_1, model.predict(test)))
 # display the relative importance of each attribute
 # # width = 0.35
-# # feature = model.feature_importances_
+feature = model.feature_importances_
 #
 # # _f = [[x, y] for x, y in zip(use_field, feature)]
-# # _f = {x: y for x, y in zip(use_field, feature)}
+_f = {x: y for x, y in zip(use_field, feature)}
 # # _f.sort(key = lambda x: x[1], reverse=True)
-# # import openpyxl
-# # wb = openpyxl.load_workbook('Data/columns_description.xlsx')
-# # w = wb.active
-# # for x in range(2, 178):
-# #     w['D%s' % (x + 2)] = _f.get(w['B%s' % (x + 2)].value, -1)*100
-# # wb.save('Data/columns_description.xlsx')
+import openpyxl
+wb = openpyxl.load_workbook('Data/columns_description.xlsx')
+w = wb.active
+for x in range(2, 178):
+    w['D%s' % (x + 2)] = _f.get(w['B%s' % (x + 2)].value, -1)*100
+wb.save('Data/columns_description.xlsx')
 # #
 # # feature = [x[1] for x in _f[:15]]
 # # use_field = [x[0] for x in _f[:15]]

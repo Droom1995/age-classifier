@@ -16,9 +16,6 @@ dataset = read_csv('Data/BaseHackathon.csv')
 # dataset2 = read_csv('Data/y.csv')
 
 dataset2 = read_csv('Data/Target_AgeGroup.csv')
-for dset in dataset:
-        if '_FM' in dset:
-            del dataset[dset]
 del dataset['MonthAgo']
 # print(dataset.columns.values)
 
@@ -56,8 +53,8 @@ print(len(dataset1.columns.values))
 #
 train = dataset1[:int(len(dataset1)/3*2)]
 test = dataset1[int(len(dataset1)/3*2):]
-target_1 = dataset.AGE_GROUP1[:int(len(dataset2)/3*2)]
-target_test_1 = dataset.AGE_GROUP1[int(len(dataset2)/3*2):]
+target_1 = dataset.AGE_GROUP2[:int(len(dataset2)/3*2)]
+target_test_1 = dataset.AGE_GROUP2[int(len(dataset2)/3*2):]
 
 model = RandomForestClassifier(n_estimators=300, n_jobs=5)
 model.fit(train, target_1)

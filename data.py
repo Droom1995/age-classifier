@@ -11,7 +11,7 @@ from sklearn import metrics
 from matplotlib import pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import Imputer
-from throw_outliers import concat_free_money
+from throw_outliers import concat_free_money,throw_outliers
 dataset = read_csv('Data/BaseHackathon.csv')
 # dataset2 = read_csv('Data/y.csv')
 
@@ -37,6 +37,7 @@ imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
 imp.fit(dataset1)
 dataset1 = imp.transform(dataset1)
 dataset1 = DataFrame(dataset1, columns=use_field)
+dataset1 = throw_outliers(dataset1)
 dataset1 = concat_free_money(dataset1)
 dataset1 = dataset1.assign(SUBS_ID=dataset.SUBS_ID)
 dataset1 = pd.merge(dataset1, dataset2, on='SUBS_ID', how='left')

@@ -16,7 +16,7 @@ dataset = read_csv('Data/BaseHackathon.csv')
 # dataset2 = read_csv('Data/y.csv')
 
 dataset2 = read_csv('Data/Target_AgeGroup.csv')
-del dataset['MonthAgo']
+# del dataset['MonthAgo']
 # print(dataset.columns.values)
 
 # print(dataset2)
@@ -53,13 +53,13 @@ print(len(dataset1.columns.values))
       # (dataset.columns.values[0]))
 # dataset1 = preprocessing.scale(dataset1)
 
-TRAIN_PART = 5/4
+TRAIN_PART = 6/5
 train = dataset1[:int(len(dataset1)/TRAIN_PART)]
 test = dataset1[int(len(dataset1)/TRAIN_PART):]
 target_1 = dataset.AGE_GROUP1[:int(len(dataset2)/TRAIN_PART)]
 target_test_1 = dataset.AGE_GROUP1[int(len(dataset2)/TRAIN_PART):]
 from sklearn.linear_model import SGDRegressor
-sgd = SGDRegressor(loss='huber', n_iter=100)
+sgd = SGDRegressor(loss='squared_loss', n_iter=1000)
 sgd.fit(train, target_1)
 test = np.hstack((test, sgd.predict(test)[None].T))
 train = np.hstack((train, sgd.predict(train)[None].T))

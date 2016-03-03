@@ -91,7 +91,7 @@ def throw_outliers(data, perc=99):
         # plt.title(quan_col)
         # plt.show()
         #data=data.drop(quan_col, 1)
-        if quantity_cols_5percentiles[quan_col]>0.999 or quantity_cols_95percentiles[quan_col]<0.001 :
+        if quantity_cols_5percentiles[quan_col]>0.9 or quantity_cols_95percentiles[quan_col]<0.001 :
             print(quan_col,quantity_cols_5percentiles[quan_col],quantity_cols_95percentiles[quan_col])
             # plt.hist(current_col)
             # plt.title(quan_col)
